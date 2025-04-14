@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 import { RenderList } from './RenderList.tsx';
-import { updateToDoList } from './logic.ts';
 
 function App() {
   const [newtoDo, setNewtoDo] = useState<string>("");
