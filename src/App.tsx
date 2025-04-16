@@ -1,12 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { RenderList } from './RenderList.tsx';
 
+type ToDo = {
+  id: number;
+  text: string;
+  done: boolean;
+};
+
+
+
 function App() {
   const [newtoDo, setNewtoDo] = useState<string>("");
-  const [toDoList, setToDoList] = useState<{text: string; done: boolean}[]>([]);
+  const [toDoList, setToDoList] = useState<ToDo[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editToDo, setEditToDo] = useState<string>("");
+
+  useEffect(() => {
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json()) 
+      .then((data: ToDo[]) => {
+        setToDoList(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching ToDos:", err);
+      });
+  }, []); 
+   
+
 
   const handleDelete = (index: number) => {
     const updatedList = toDoList.filter((_, i) => i !== index);
@@ -56,10 +77,22 @@ function App() {
         />
         <button onClick={() => {
           if(!newtoDo.trim()) return;
-          const newItem = { text: newtoDo, done: false };
-          const updatedList = [...toDoList, newItem];
-          setToDoList(updatedList);
-          setNewtoDo("");
+          const newToDo = { text: newtoDo, done: false };
+          fetch("http://localhost:3000/todos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newToDo),
+          })
+          .then((res) => res.json())
+          .then((data: ToDo) => {
+            setToDoList((prevList) => [...prevList, data]);
+            setNewtoDo(""); 
+          })
+          .catch((err) => {
+            console.error("Error adding ToDo:", err);
+          });
         }}>
           Add ToDo
         </button>
