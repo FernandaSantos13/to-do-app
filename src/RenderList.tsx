@@ -1,43 +1,56 @@
-import { useEffect } from 'react';
-import './App.css'; 
+import { useEffect, useState } from 'react';
+import './App.css';
+import { ToDo } from './apiClient';
 
 
-export const RenderList = ({ toDoList, onDelete, onToggleDone, onEdit, onEditToDo, onSaveEdit, editIndex, editToDo }: 
-  { toDoList: {text: string; done: boolean}[]; 
-  onDelete: (index: number) => void;
-  onToggleDone: (index: number) => void;
-  onEdit: (index: number) => void;
-  onEditToDo: (text: string) => void;
-  onSaveEdit: () => void;
-  editIndex: number | null;
-  editToDo: string; 
-}) => {
-
-  useEffect (() => {
+export const RenderList = ({ toDoList, onDelete, onToggleDone, onSaveEdit }:
+  {
+    toDoList: ToDo[];
+    onDelete: (toDo: ToDo) => Promise<void>;
+    onToggleDone: (toDo: ToDo) => Promise<void>;
+    onSaveEdit: (toDo: ToDo) => Promise<void>;
+  }) => {
+  const [editToDo, setEditToDo] = useState<ToDo | undefined>(undefined);
+  useEffect(() => {
     console.log("New toDoList:", toDoList);
   }
-  , [toDoList]);
+    , [toDoList]);
+
+  const handleSaveEdit = async () => {
+    if (!editToDo) {
+      return;
+    }
+
+    await onSaveEdit(editToDo);
+    setEditToDo(undefined);
+  }
 
   return (
     <>
       {toDoList.map((toDo, index) => (
         <li key={index}>
-          {editIndex === index ? (
+          {editToDo && editToDo.id === toDo.id &&
             <div>
               <input
                 type="text"
-                value={editToDo}
-                onChange={(e) => onEditToDo(e.target.value)}
+                value={editToDo.text}
+                onChange={(e) => setEditToDo({
+                  ...editToDo,
+                  text: e.target.value,
+                })}
               />
-              <button onClick={onSaveEdit}>SAVE</button>
+              <button onClick={handleSaveEdit}>SAVE</button>
             </div>
-          ) : null}
-          <span style={{textDecoration: toDo.done ? 'line-through' : 'none'}}>
-            {toDo.text}
-          </span>
-          <button onClick={() => onDelete(index)}>REMOVE</button>
-          <button onClick={() => onEdit(index)}>EDIT</button>
-          <button onClick={() => onToggleDone(index)}>DONE!</button></li>
+          }
+          {editToDo?.id !== toDo.id && <>
+            <span style={{ textDecoration: toDo.done ? 'line-through' : 'none' }}>
+              {toDo.text}
+            </span>
+            <button onClick={() => onDelete(toDo)}>REMOVE</button>
+            <button onClick={() => setEditToDo(toDo)}>EDIT</button>
+            <button onClick={() => onToggleDone(toDo)}>DONE!</button>
+        </>}
+    </li >
       ))}
     </>
   )
