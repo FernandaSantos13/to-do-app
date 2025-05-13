@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { RenderList } from './RenderList.tsx';
 import { ToDo, api } from './apiClient.ts';
+import { nanoid } from 'nanoid';
 
 
 
@@ -26,7 +27,7 @@ function App() {
     if (!newtoDo.trim()) {
       return;
     }
-    const newToDo = { id: -1, text: newtoDo, done: false };
+    const newToDo = { id: nanoid(), text: newtoDo, done: false };
     const serverToDo = await api.save(newToDo)
     setToDoList([...toDoList, serverToDo]);
     setNewtoDo("");
