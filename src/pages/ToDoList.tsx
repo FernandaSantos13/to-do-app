@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+//import './App.css'
 import { RenderList } from '../RenderList.tsx';
 import { ToDo, api } from '../apiClient.ts';
 import { nanoid } from 'nanoid';
+import { useNavigate } from 'react-router-dom';
 
 
 export function ToDoList() {
     const [newtoDo, setNewtoDo] = useState<string>("");
     const [toDoList, setToDoList] = useState<ToDo[]>([]);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -20,7 +22,10 @@ export function ToDoList() {
             });
     }, []);
 
-
+    const handleLogout = () => {
+        localStorage.removeItem('userId');
+        navigate('/login');
+    };
 
     const handleSave = async () => {
         if (!newtoDo.trim()) {
@@ -60,7 +65,11 @@ export function ToDoList() {
 
     return (
         <>
-            <h1>To Do List App</h1>
+            <div className="header">
+                <h1>To Do List App</h1>
+                <button onClick={handleLogout}>Logout</button>
+            </div>
+            
             <div className="add-todo">
                 <textarea
                     value={newtoDo}
