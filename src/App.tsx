@@ -1,31 +1,34 @@
-import { useState } from 'react'
-import './App.css'
+import './App.css';
+import { Routes, Route, Navigate } from 'react-router';
+import { Login } from './pages/Login.tsx';
+import { ToDoList } from './pages/ToDoList.tsx';
+import { SignUp } from './pages/SignUp.tsx';
+//import {useEffect, useState } from 'react';
 
-function App() {
-  const [newtoDo, setNewtoDo] = useState<string>("");
-  const [toDoList, setToDoList] = useState<string[]>([]);
 
-  return (
-    <>
-      <h1>To Do List App</h1>
-      <div className="add-todo">
-        <textarea
-          value={0}
-          placeholder='Add ToDo here'
-          onChange={(e) => setNewtoDo(e.target.value)}
-          rows={10}
-          cols={30}
-        />
-        <button onClick={UpdateToDoList}>
-          Add ToDo
-        </button>
-      </div>
-      <div className="to-do-list">
-        <h2>ToDo List</h2>
-        <ol>{RenderList}</ol>
-      </div>
-    </>
-  )
-}
+export function App() {
+  const userId = localStorage.getItem('userId')
+    console.log(userId)
+    return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={userId ? "/todos" : "/login"} />}
+      />
+      <Route
+        path="/login"
+        element={userId ? <Navigate to="/todos" /> : <Login />}
+      />
+      <Route
+        path="/signup"
+        element={userId ? <Navigate to="/todos" /> : <SignUp />}
+      />
+      <Route
+        path="/todos"
+        element={userId ? <ToDoList /> : <Navigate to="/login" />}
+      />
+    </Routes>
+  );
+};
 
 export default App
