@@ -1,6 +1,8 @@
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { auth } from '../apiClient.ts';
+
 
 type SignUpData = {
     name: string;
@@ -16,20 +18,7 @@ export function SignUp() {
         setErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:3000/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Sign up failed');
-            }
-
-            const result = await response.json();
+            const result = await auth.signup(data.name, data.email);
             localStorage.setItem('userId', result.userId);
             navigate('/todos');
         } catch (error: any) {
@@ -47,14 +36,14 @@ export function SignUp() {
                     {...register('name', { required: 'Name is required' })}
                 />
                 {errors.name && <p className="error">{errors.name.message}</p>}
-                
+
                 <input
                     type="email"
                     placeholder="Enter your email"
                     {...register('email', { required: 'Email is required' })}
                 />
                 {errors.email && <p className="error">{errors.email.message}</p>}
-                
+
                 <button type="submit">Sign Up</button>
             </form>
 

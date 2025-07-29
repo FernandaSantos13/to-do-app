@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { auth } from '../apiClient';
 
 type FormData = {
     email: string;  
@@ -13,31 +14,16 @@ export function Login() {
 
     const onSubmit = async (data: FormData) => {
         setErrorMessage('');
-
+        console.log("Submitting login with:", data);
         try {
-            const response = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify( data ),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                if (response.status === 404) {
-                    navigate('/signup');
-                    return;
-                }
-
-                throw new Error(errorData.error || 'Login failed');
-            }
-
-            const result = await response.json();
+            const result = await auth.login(data.email);
             localStorage.setItem('userId', result.userId);
             navigate('/todos');
         } catch (error: any) {
+            if (error.message.toLowerCase().includes('not found')) {
+                navigate('/signup');
+                return;
+            }
             setErrorMessage(error.message || 'An error occurred');
         }
     };

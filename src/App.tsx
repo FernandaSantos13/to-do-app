@@ -1,14 +1,15 @@
 import './App.css';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
 import { Login } from './pages/Login.tsx';
 import { ToDoList } from './pages/ToDoList.tsx';
 import { SignUp } from './pages/SignUp.tsx';
+//import {useEffect, useState } from 'react';
 
 
-function App() {
-  const userId = localStorage.getItem('userId');
-
-  return (
+export function App() {
+  const userId = localStorage.getItem('userId')
+    console.log(userId)
+    return (
     <Routes>
       <Route
         path="/"

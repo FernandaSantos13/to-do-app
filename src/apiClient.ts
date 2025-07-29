@@ -1,5 +1,3 @@
-import { get } from "react-hook-form";
-
 export type ToDo = {
     id: string;
     text: string;
@@ -70,4 +68,35 @@ export type ToDo = {
 
         return result as ToDo;
     }
-}
+};
+
+export const auth = {
+    login: async (email: string): Promise< {userId: string}> => {
+        const res = await fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email}),
+        });
+
+        if (!res.ok) {
+            const errorData =  await res.json();
+            throw new Error(errorData.error || "Login failed");
+        }
+
+        return res.json();
+    },
+    signup: async (name: string, email: string): Promise<{ userId: string }> => {
+        const res = await fetch("http://localhost:3000/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email }),
+        });
+    
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Sign up failed");
+        }
+    
+        return res.json();
+      }
+};
